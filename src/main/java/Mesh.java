@@ -1,6 +1,7 @@
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL15C.*;
 import static org.lwjgl.opengl.GL20C.*;
@@ -26,6 +27,7 @@ public class Mesh {
 
         verticesBuffer = MemoryUtil.memCallocFloat( vertices.length );
         verticesBuffer.put( 0, vertices );
+
         init();
     }
 
