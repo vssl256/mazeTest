@@ -1,8 +1,10 @@
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL43C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class GlfwWindow {
@@ -15,7 +17,10 @@ public class GlfwWindow {
     public boolean isResized = false;
     private boolean isVsync = true;
 
-    public boolean[] keys = new boolean[ GLFW_KEY_LAST ];
+    private GLFWVidMode mode;
+    private long monitor;
+
+    public boolean[] keys = new boolean[ GLFW_KEY_LAST - 1 ];
 
     private final float[] clearColor = { 0, 0, 0 };
 
@@ -32,9 +37,9 @@ public class GlfwWindow {
     }
 
     private void init() {
-
         glfwInit();
-        System.out.println( glfwGetPlatform() );
+
+        debugPlatform();
 
         setWindowHints();
 
@@ -50,7 +55,28 @@ public class GlfwWindow {
 
         GL.createCapabilities();
 
+        initMonitor();
+
         setCallbacks();
+    }
+
+    private void debugPlatform() {
+        int platform = glfwGetPlatform();
+        switch ( platform ) {
+            case GLFW_PLATFORM_WAYLAND -> System.out.println( "Wayland" );
+            case GLFW_PLATFORM_X11 -> System.out.println( "X11" );
+            case GLFW_PLATFORM_WIN32 -> System.out.println( "Win32" );
+            case GLFW_PLATFORM_COCOA -> System.out.println( "Cocoa" );
+            default -> System.out.println( "Unrecognised platform" );
+        }
+    }
+
+    private void initMonitor() {
+        PointerBuffer monitors = glfwGetMonitors();
+        while ( monitors != null && monitors.hasRemaining() ) {
+            monitor = monitors.get();
+        }
+        mode = glfwGetVideoMode( monitor );
     }
 
     private void setCallbacks() {
@@ -66,15 +92,32 @@ public class GlfwWindow {
     }
 
     private void keyCallback( long _win, int key, int _scancode, int action, int _mods ) {
-        if ( key >= 0 && key < GLFW_KEY_LAST ) {
+        if ( key >= 0 && key <= GLFW_KEY_LAST ) {
             keys[ key ] = ( action != GLFW_RELEASE );
         }
         if ( action == GLFW_PRESS ) {
             switch ( key ) {
                 case GLFW_KEY_ESCAPE -> glfwSetWindowShouldClose( id, true );
                 case GLFW_KEY_V -> toggleVsync();
+                case GLFW_KEY_P -> togglePolygonMode();
+                case GLFW_KEY_F -> toggleFullscreen();
             }
         }
+    }
+
+    private void toggleFullscreen() {
+        if ( !isFullscreen ) {
+            glfwSetWindowMonitor( id, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate() );
+        } else {
+            glfwSetWindowMonitor( id, NULL, 0, 0, width, height, mode.refreshRate() );
+        }
+        isFullscreen = !isFullscreen;
+    }
+
+    private int currentPolygonMode = GL_FILL;
+    private void togglePolygonMode() {
+        currentPolygonMode = ( currentPolygonMode == GL_FILL ) ? GL_LINE : GL_FILL;
+        glPolygonMode( GL_FRONT_AND_BACK, currentPolygonMode );
     }
 
     private void toggleVsync() {

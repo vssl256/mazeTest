@@ -1,5 +1,7 @@
 #version 410 core
 
 void main() {
-    gl_FragColor = vec4( 0.2, 0.14, 0.2, 0.0f );
+    vec2 pixels = vec2( gl_FragCoord );
+    float color = 1 - pixels.y / 480.0f;
+    gl_FragColor = vec4( color, color, color, color );
 }
