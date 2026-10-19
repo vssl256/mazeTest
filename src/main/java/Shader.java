@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL40C.*;
+import static utils.FileExtensions.frag;
+import static utils.FileExtensions.vert;
 import static utils.FileTypes.SHADER;
 
 public class Shader {
@@ -20,8 +22,8 @@ public class Shader {
     public Map<String, Object> uniforms;
 
     public Shader( String name ) {
-        vsFile = new File( SHADER, name, "vert" );
-        fsFile = new File( SHADER, name, "frag" );
+        vsFile = new File( SHADER, name, vert );
+        fsFile = new File( SHADER, name, frag );
 
         uLocations = new HashMap<>();
         uniforms = new HashMap<>();

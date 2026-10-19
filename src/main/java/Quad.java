@@ -1,16 +1,16 @@
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL15C.*;
 import static org.lwjgl.opengl.GL20C.*;
 import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
-public class Mesh {
+public class Quad {
 
     private final Shader shader;
+    private final Texture texture;
 
     private FloatBuffer verticesBuffer;
     private int VAO;
@@ -22,8 +22,9 @@ public class Mesh {
             1, 2, 3
     };
 
-    public Mesh( float[] vertices, Shader shader ) {
+    public Quad(float[] vertices, Shader shader, Texture texture ) {
         this.shader = shader;
+        this.texture = texture;
 
         verticesBuffer = MemoryUtil.memCallocFloat( vertices.length );
         verticesBuffer.put( 0, vertices );
@@ -43,8 +44,11 @@ public class Mesh {
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, EBO );
         glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW );
 
-        glVertexAttribPointer( 0, 3, GL_FLOAT , false, 3 * Float.BYTES, 0 );
+        glVertexAttribPointer( 0, 3, GL_FLOAT , false, 5 * Float.BYTES, 0 );
         glEnableVertexAttribArray( 0 );
+
+        glVertexAttribPointer( 1, 2, GL_FLOAT, false, 5 * Float.BYTES, 3 * Float.BYTES );
+        glEnableVertexAttribArray( 1 );
 
         MemoryUtil.memFree( verticesBuffer );
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -53,6 +57,9 @@ public class Mesh {
     public void draw() {
         shader.recompile();
         glUseProgram( shader.id );
+
+        glActiveTexture( GL_TEXTURE );
+        glBindTexture( GL_TEXTURE_2D, texture.id );
 
         glBindVertexArray( VAO );
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0 );
