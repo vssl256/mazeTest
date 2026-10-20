@@ -1,4 +1,5 @@
 import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import utils.File;
 import utils.FileExtensions;
@@ -33,7 +34,7 @@ public class Texture {
                     bufferWidth,
                     bufferHeight,
                     bufferChannels,
-                    4
+                    STBI_rgb_alpha
             );
             width = bufferWidth.get();
             height = bufferHeight.get();
@@ -70,7 +71,7 @@ public class Texture {
         glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
-                GL_RGBA,
+                GL_RGBA8,
                 width,
                 height,
                 0,
@@ -78,13 +79,6 @@ public class Texture {
                 GL_UNSIGNED_BYTE,
                 bufferTexture
         );
-
-        if ( fileType == FONT ) {
-            IntBuffer swizzleMask = BufferUtils.createIntBuffer( 4 );
-            swizzleMask.put( new int[] { GL_ALPHA, GL_ALPHA, GL_ALPHA, GL_ALPHA } );
-            swizzleMask.flip();
-            glTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask );
-        }
 
         glGenerateMipmap( GL_TEXTURE_2D );
     }

@@ -34,11 +34,11 @@ public class Quad {
         init();
     }
 
-    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH ) {
-        float xMin = ( float ) x / SCREEN_WIDTH * 2.0f - 1.0f;
-        float xMax = ( float ) ( x + width ) / SCREEN_WIDTH * 2.0f - 1.0f;
-        float yMin = 1.0f - ( float ) y / SCREEN_HEIGHT * 2.0f;
-        float yMax = 1.0f - ( float ) ( y + height ) / SCREEN_HEIGHT * 2.0f;
+    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH, int size ) {
+        float xMin = ( float ) x / SCREEN_WIDTH * size * 2.0f - 1.0f;
+        float xMax = ( float ) ( x + width ) / SCREEN_WIDTH * size * 2.0f - 1.0f;
+        float yMin = 1.0f - ( float ) y / SCREEN_HEIGHT * size * 2.0f;
+        float yMax = 1.0f - ( float ) ( y + height ) / SCREEN_HEIGHT * size * 2.0f;
 
         float xMinA = ( float ) atlasX / atlasW;
         float xMaxA = ( float ) ( atlasX + width ) / atlasW;

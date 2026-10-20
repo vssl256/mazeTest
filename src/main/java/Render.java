@@ -13,9 +13,10 @@ public class Render {
     public Render( GlfwWindow win ) {
         this.win = win;
         Shader shader = new Shader( "default" );
+        Shader fontShader = new Shader( "font1" );
         Texture texture = new Texture( "test", png, TEXTURE );
 
-        Font font = new Font( "test", shader );
+        Font font = new Font( "test", fontShader );
 
         Quad quad = new Quad( new float[] {
                 1.0f,   1.0f,   0.0f,       1.0f,   1.0f,
@@ -25,7 +26,7 @@ public class Render {
         }, shader, texture );
 
         quads.add( quad );
-        quads.addAll( font.write( 0, 0, "test string " ) );
+        quads.addAll( font.write( 0, 0, "test string ", 2 ) );
     }
 
     public void render() {

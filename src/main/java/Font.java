@@ -42,19 +42,19 @@ public class Font {
         }
     }
 
-    public List<Quad> write( int x, int y, String string ) {
+    public List<Quad> write( int x, int y, String string, int size ) {
         List<Quad> glyphs = new ArrayList<>();
         for ( char glyph : string.toCharArray() ) {
             FontData.CharData charData = charMap.get( ( int ) glyph );
-            Quad character = drawCharacter( x, y, ( int ) glyph );
+            Quad character = drawCharacter( x, y, ( int ) glyph, size );
             x += charData.xadvance;
             glyphs.add( character );
         }
         return glyphs;
     }
 
-    public Quad drawCharacter( int x, int y, Integer id ) {
+    public Quad drawCharacter( int x, int y, Integer id, int size ) {
         FontData.CharData charData = charMap.get( id );
-        return new Quad( x, y, charData.width, charData.height, shader, atlas, charData.x, charData.y, scaleW, scaleH );
+        return new Quad( x, y, charData.width, charData.height, shader, atlas, charData.x, charData.y, scaleW, scaleH, size );
     }
 }
