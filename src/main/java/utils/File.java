@@ -7,6 +7,7 @@ public class File {
     private static final String RESOURCES_DIR = "src/main/resources/";
     private static final String SHADERS_DIR = RESOURCES_DIR + "shaders/";
     private static final String TEXTURES_DIR = RESOURCES_DIR + "textures/";
+    private static final String FONTS_DIR = RESOURCES_DIR + "fonts/";
 
     private final java.io.File file;
     private final FileTypes fileType;
@@ -42,6 +43,7 @@ public class File {
         return switch ( fileType ) {
             case SHADER -> SHADERS_DIR + name + "/shader";
             case TEXTURE -> TEXTURES_DIR + name;
+            case FONT -> FONTS_DIR + name + "/font";
         };
     }
 }

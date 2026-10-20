@@ -8,6 +8,8 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
 public class Quad {
+    private static final int SCREEN_WIDTH = 640;
+    private static final int SCREEN_HEIGHT = 480;
 
     private final Shader shader;
     private final Texture texture;
@@ -22,7 +24,34 @@ public class Quad {
             1, 2, 3
     };
 
-    public Quad(float[] vertices, Shader shader, Texture texture ) {
+    public Quad( float[] vertices, Shader shader, Texture texture ) {
+        this.shader = shader;
+        this.texture = texture;
+
+        verticesBuffer = MemoryUtil.memCallocFloat( vertices.length );
+        verticesBuffer.put( 0, vertices );
+
+        init();
+    }
+
+    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH ) {
+        float xMin = ( float ) x / SCREEN_WIDTH * 2.0f - 1.0f;
+        float xMax = ( float ) ( x + width ) / SCREEN_WIDTH * 2.0f - 1.0f;
+        float yMin = 1.0f - ( float ) y / SCREEN_HEIGHT * 2.0f;
+        float yMax = 1.0f - ( float ) ( y + height ) / SCREEN_HEIGHT * 2.0f;
+
+        float xMinA = ( float ) atlasX / atlasW;
+        float xMaxA = ( float ) ( atlasX + width ) / atlasW;
+        float yMinA = 1.0f - ( float ) atlasY / atlasH;
+        float yMaxA = 1.0f - ( float ) ( atlasY + height ) / atlasH;
+
+        float[] vertices = {
+                xMin, yMin, 0.0f,     xMinA, yMinA,
+                xMax, yMin, 0.0f,     xMaxA, yMinA,
+                xMax, yMax, 0.0f,     xMaxA, yMaxA,
+                xMin, yMax, 0.0f,     xMinA, yMaxA
+        };
+
         this.shader = shader;
         this.texture = texture;
 
@@ -59,7 +88,11 @@ public class Quad {
         glUseProgram( shader.id );
 
         glActiveTexture( GL_TEXTURE );
-        glBindTexture( GL_TEXTURE_2D, texture.id );
+        if ( texture != null ) {
+            glBindTexture( GL_TEXTURE_2D, texture.id );
+        } else {
+            glBindTexture( GL_TEXTURE_2D, 0 );
+        }
 
         glBindVertexArray( VAO );
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0 );

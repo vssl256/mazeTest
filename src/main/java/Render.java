@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static utils.FileExtensions.*;
+import static utils.FileTypes.FONT;
+import static utils.FileTypes.TEXTURE;
 
 public class Render {
 
@@ -11,31 +13,19 @@ public class Render {
     public Render( GlfwWindow win ) {
         this.win = win;
         Shader shader = new Shader( "default" );
-        Texture texture2 = new Texture( "null", png );
-        Texture texture = new Texture( "test", png );
-        Texture texture1 = new Texture( "test2", png );
+        Texture texture = new Texture( "test", png, TEXTURE );
+
+        Font font = new Font( "test", shader );
+
         Quad quad = new Quad( new float[] {
                 1.0f,   1.0f,   0.0f,       1.0f,   1.0f,
                 1.0f,   -1.0f,  0.0f,       1.0f,   0.0f,
                 -1.0f,  -1.0f,  0.0f,       0.0f,   0.0f,
                 -1.0f,  1.0f,   0.0f,       0.0f,   1.0f
         }, shader, texture );
-        Quad quad2 = new Quad( new float[] {
-                -0.8f,   1.0f,   0.0f,       1.0f,   1.0f,
-                -0.8f,   0.8f,  0.0f,       1.0f,   0.0f,
-                -1.0f,  0.8f,  0.0f,       0.0f,   0.0f,
-                -1.0f,  1.0f,   0.0f,       0.0f,   1.0f
-        }, shader, texture2 );
-        Quad quad3 = new Quad( new float[] {
-                0.8f,   1.0f,   0.0f,       1.0f,   1.0f,
-                0.8f,   0.8f,  0.0f,       1.0f,   0.0f,
-                1.0f,  0.8f,  0.0f,       0.0f,   0.0f,
-                1.0f,  1.0f,   0.0f,       0.0f,   1.0f
-        }, shader, texture1 );
 
         quads.add( quad );
-        quads.add( quad2 );
-        quads.add( quad3 );
+        quads.addAll( font.write( 0, 0, "test string " ) );
     }
 
     public void render() {

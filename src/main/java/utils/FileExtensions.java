@@ -1,5 +1,5 @@
 package utils;
 
 public enum FileExtensions {
-    frag, vert, png, jpg, jpeg
+    frag, vert, png, jpg, jpeg, json
 }

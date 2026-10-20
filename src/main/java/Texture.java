@@ -2,6 +2,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 import utils.File;
 import utils.FileExtensions;
+import utils.FileTypes;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -15,8 +16,10 @@ public class Texture {
     public int id;
     public int width, height, channels;
     public File file;
+    public FileTypes fileType;
 
-    public Texture( String name, FileExtensions extension ) {
+    public Texture(String name, FileExtensions extension, FileTypes fileType ) {
+        this.fileType = fileType;
         stbi_set_flip_vertically_on_load( true );
 
         try ( MemoryStack stack = MemoryStack.stackPush() ) {
@@ -24,13 +27,13 @@ public class Texture {
             IntBuffer bufferHeight = stack.mallocInt( 1 );
             IntBuffer bufferChannels = stack.mallocInt( 1 );
 
-            file = new File( TEXTURE, name, extension );
+            file = new File( fileType, name, extension );
             ByteBuffer bufferTexture = stbi_load(
                     file.getPath(),
                     bufferWidth,
                     bufferHeight,
                     bufferChannels,
-                    0
+                    4
             );
             width = bufferWidth.get();
             height = bufferHeight.get();
@@ -49,6 +52,8 @@ public class Texture {
     private void genTexture( ByteBuffer bufferTexture ) {
         id = glGenTextures();
         glBindTexture( GL_TEXTURE_2D, id );
+
+        glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
         glTexParameteri(
                 GL_TEXTURE_2D,
@@ -73,6 +78,13 @@ public class Texture {
                 GL_UNSIGNED_BYTE,
                 bufferTexture
         );
+
+        if ( fileType == FONT ) {
+            IntBuffer swizzleMask = BufferUtils.createIntBuffer( 4 );
+            swizzleMask.put( new int[] { GL_ALPHA, GL_ALPHA, GL_ALPHA, GL_ALPHA } );
+            swizzleMask.flip();
+            glTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask );
+        }
 
         glGenerateMipmap( GL_TEXTURE_2D );
     }
