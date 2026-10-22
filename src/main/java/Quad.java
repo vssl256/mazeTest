@@ -34,7 +34,7 @@ public class Quad {
         init();
     }
 
-    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH, int size ) {
+    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH, float size ) {
         float xMin = ( float ) x / SCREEN_WIDTH * size * 2.0f - 1.0f;
         float xMax = ( float ) ( x + width ) / SCREEN_WIDTH * size * 2.0f - 1.0f;
         float yMin = 1.0f - ( float ) y / SCREEN_HEIGHT * size * 2.0f;
@@ -84,7 +84,7 @@ public class Quad {
     }
 
     public void draw() {
-        shader.recompile();
+        //shader.recompile();
         glUseProgram( shader.id );
 
         glActiveTexture( GL_TEXTURE );
@@ -96,6 +96,6 @@ public class Quad {
 
         glBindVertexArray( VAO );
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0 );
-        glUseProgram( 0 );
+        //glUseProgram( 0 );
     }
 }

@@ -44,12 +44,12 @@ public class Font {
         }
     }
 
-    public List<Quad> createQuads( int x, int y, String string, int size ) {
+    public List<Quad> createQuads( int x, int y, String string, float size ) {
         List<Quad> glyphs = new ArrayList<>();
         char[] chars = string.toCharArray();
         for (int i = 0; i < chars.length; i++ ) {
             char glyph = chars[i];
-            FontData.CharData charData = charMap.get( ( int ) glyph );
+            FontData.CharData charData = charMap.get((int) glyph);
             boolean newLine = ( glyph == '\n' );
             if ( !newLine ) { newLine = x + charData.width >= 1920; }
             if ( newLine ) {
@@ -59,13 +59,12 @@ public class Font {
                 Quad character = drawCharacter( x, y, ( int ) glyph, size );
                 x += charData.xadvance;
                 glyphs.add( character );
-
             }
         }
         return glyphs;
     }
 
-    public Quad drawCharacter( int x, int y, Integer id, int size ) {
+    public Quad drawCharacter( int x, int y, Integer id, float size ) {
         FontData.CharData charData = charMap.get( id );
         return new Quad( x, y, charData.width, charData.height, shader, atlas, charData.x, charData.y, scaleW, scaleH, size );
     }

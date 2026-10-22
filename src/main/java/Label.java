@@ -6,10 +6,10 @@ public class Label {
     private final Font font;
     public String string;
     public int x, y;
-    public int size;
+    public float size;
     public List<Quad> quads;
 
-    public Label( Font font, String string, int x, int y, int size ) {
+    public Label( Font font, String string, int x, int y, float size ) {
         this.font = font;
         this.string = string;
         this.x = x;

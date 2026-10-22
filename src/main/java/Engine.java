@@ -29,9 +29,9 @@ public class Engine {
 
         Shader fontShader = new Shader( "font1" );
         Font font = new Font( "test", fontShader );
-        label = new Label( font, "", 0, 0, 1 );
+        label = new Label( font, "", 0, 0, 1.0f );
 
-        Label label1 = new Label( font, string, 0, 0, 1 );
+        Label label1 = new Label( font, string, 0, 0, 1f );
 
         labels.add( label );
         labels.add( label1 );
@@ -49,7 +49,7 @@ public class Engine {
             render.render();
 
             label.set( time.getFps() + " FPS" );
-            win.setTitle( time.getFps() + " FPS"  );
+            win.setTitle( time.getFps() + " FPS" );
 
             time.end();
         }
