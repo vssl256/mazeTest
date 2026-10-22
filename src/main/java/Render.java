@@ -2,21 +2,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static utils.FileExtensions.*;
-import static utils.FileTypes.FONT;
 import static utils.FileTypes.TEXTURE;
 
 public class Render {
 
     private final GlfwWindow win;
     private final List<Quad> quads = new ArrayList<>();
+    private List<Label> labels;
 
-    public Render( GlfwWindow win ) {
+    public Render( GlfwWindow win, List<Label> labels ) {
         this.win = win;
+        this.labels = labels;
         Shader shader = new Shader( "default" );
-        Shader fontShader = new Shader( "font1" );
         Texture texture = new Texture( "test", png, TEXTURE );
-
-        Font font = new Font( "test", fontShader );
 
         Quad quad = new Quad( new float[] {
                 1.0f,   1.0f,   0.0f,       1.0f,   1.0f,
@@ -26,7 +24,7 @@ public class Render {
         }, shader, texture );
 
         quads.add( quad );
-        quads.addAll( font.write( 0, 0, "test string ", 2 ) );
+        //quads.addAll( font.createQuads( 0, 0, string, 1 ) );
     }
 
     public void render() {
@@ -34,6 +32,14 @@ public class Render {
 
         for ( Quad quad : quads ) {
             quad.draw();
+        }
+        if ( labels != null ) {
+            for ( Label label : labels ) {
+                if ( label.quads == null ) continue;
+                for ( Quad quad : label.quads ) {
+                    quad.draw();
+                }
+            }
         }
 
         win.swapBuffers();

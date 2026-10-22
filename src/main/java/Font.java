@@ -15,6 +15,7 @@ public class Font {
     public Map<Integer, FontData.CharData> charMap = new HashMap<>();
     public Texture atlas;
     public int scaleW, scaleH;
+    public int lineHeight;
     private final Shader shader;
 
     public Font( String fontName, Shader shader ) {
@@ -36,19 +37,30 @@ public class Font {
 
         scaleW = fontData.common.scaleW;
         scaleH = fontData.common.scaleH;
+        lineHeight = fontData.common.lineHeight;
 
         for ( FontData.CharData c : fontData.chars) {
             charMap.put( c.id, c );
         }
     }
 
-    public List<Quad> write( int x, int y, String string, int size ) {
+    public List<Quad> createQuads( int x, int y, String string, int size ) {
         List<Quad> glyphs = new ArrayList<>();
-        for ( char glyph : string.toCharArray() ) {
+        char[] chars = string.toCharArray();
+        for (int i = 0; i < chars.length; i++ ) {
+            char glyph = chars[i];
             FontData.CharData charData = charMap.get( ( int ) glyph );
-            Quad character = drawCharacter( x, y, ( int ) glyph, size );
-            x += charData.xadvance;
-            glyphs.add( character );
+            boolean newLine = ( glyph == '\n' );
+            if ( !newLine ) { newLine = x + charData.width >= 1920; }
+            if ( newLine ) {
+                y += lineHeight;
+                x = 0;
+            } else {
+                Quad character = drawCharacter( x, y, ( int ) glyph, size );
+                x += charData.xadvance;
+                glyphs.add( character );
+
+            }
         }
         return glyphs;
     }

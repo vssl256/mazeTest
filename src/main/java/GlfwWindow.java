@@ -11,6 +11,10 @@ public class GlfwWindow {
 
     public long id;
     public int width, height;
+    public int[] windowedWidth = new int[1];
+    public int[] windowedHeight = new int[1];
+    public int[] x = new int[1];
+    public int[] y = new int[1];
     public String title;
 
     public boolean isFullscreen = false;
@@ -110,11 +114,17 @@ public class GlfwWindow {
 
     private void toggleFullscreen() {
         if ( !isFullscreen ) {
+            saveWindowState();
             glfwSetWindowMonitor( id, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate() );
         } else {
-            glfwSetWindowMonitor( id, NULL, 0, 0, width, height, mode.refreshRate() );
+            glfwSetWindowMonitor( id, NULL, x[0], y[0], windowedWidth[0], windowedHeight[0], mode.refreshRate() );
         }
         isFullscreen = !isFullscreen;
+    }
+
+    private void saveWindowState() {
+        glfwGetWindowPos( id, x, y );
+        glfwGetWindowSize( id, windowedWidth, windowedHeight );
     }
 
     private int currentPolygonMode = GL_FILL;

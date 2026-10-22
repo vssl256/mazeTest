@@ -8,8 +8,8 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
 public class Quad {
-    private static final int SCREEN_WIDTH = 640;
-    private static final int SCREEN_HEIGHT = 480;
+    private static final int SCREEN_WIDTH = 1920;
+    private static final int SCREEN_HEIGHT = 1080;
 
     private final Shader shader;
     private final Texture texture;
