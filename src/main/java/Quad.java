@@ -8,14 +8,14 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
 public class Quad {
-    private static final int SCREEN_WIDTH = 640;
-    private static final int SCREEN_HEIGHT = 480;
+    private static final int SCREEN_WIDTH = 1920;
+    private static final int SCREEN_HEIGHT = 1080;
 
-    private final Shader shader;
-    private final Texture texture;
+    public final Shader shader;
+    public final Texture texture;
 
     private FloatBuffer verticesBuffer;
-    private int VAO;
+    public int VAO;
     private int VBO;
     private int EBO;
 
@@ -34,7 +34,29 @@ public class Quad {
         init();
     }
 
-    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH, int size ) {
+    public Quad( int x, int y, int width, int height, Shader shader, Texture texture ) {
+        float xMin = ( float ) x / SCREEN_WIDTH * 2.0f - 1.0f;
+        float xMax = ( float ) ( x + width ) / SCREEN_WIDTH * 2.0f - 1.0f;
+        float yMin = ( float ) y / SCREEN_HEIGHT * 2.0f - 1.0f;
+        float yMax = ( float ) ( y + height ) / SCREEN_HEIGHT * 2.0f - 1.0f;
+
+        float[] vertices = {
+                xMin, yMin, 0.0f,     0.0f, 0.0f,
+                xMax, yMin, 0.0f,     1.0f, 0.0f,
+                xMax, yMax, 0.0f,     1.0f, 1.0f,
+                xMin, yMax, 0.0f,     0.0f, 1.0f
+        };
+
+        this.shader = shader;
+        this.texture = texture;
+
+        verticesBuffer = MemoryUtil.memCallocFloat( vertices.length );
+        verticesBuffer.put( 0, vertices );
+
+        init();
+    }
+
+    public Quad( int x, int y, int width, int height, Shader shader, Texture texture, int atlasX, int atlasY, int atlasW, int atlasH, float size ) {
         float xMin = ( float ) x / SCREEN_WIDTH * size * 2.0f - 1.0f;
         float xMax = ( float ) ( x + width ) / SCREEN_WIDTH * size * 2.0f - 1.0f;
         float yMin = 1.0f - ( float ) y / SCREEN_HEIGHT * size * 2.0f;
@@ -84,7 +106,6 @@ public class Quad {
     }
 
     public void draw() {
-        shader.recompile();
         glUseProgram( shader.id );
 
         glActiveTexture( GL_TEXTURE );
@@ -96,6 +117,5 @@ public class Quad {
 
         glBindVertexArray( VAO );
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0 );
-        glUseProgram( 0 );
     }
 }

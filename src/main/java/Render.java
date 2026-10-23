@@ -1,40 +1,29 @@
-import java.util.ArrayList;
 import java.util.List;
 
-import static utils.FileExtensions.*;
-import static utils.FileTypes.FONT;
-import static utils.FileTypes.TEXTURE;
+import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL13C.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13C.glActiveTexture;
+import static org.lwjgl.opengl.GL20C.glUseProgram;
+import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 
 public class Render {
 
     private final GlfwWindow win;
-    private final List<Quad> quads = new ArrayList<>();
+    private final List<Quad> quads;
+    private final List<Label> labels;
 
-    public Render( GlfwWindow win ) {
+    public Render( GlfwWindow win, List<Quad> quads, List<Label> labels ) {
         this.win = win;
-        Shader shader = new Shader( "default" );
-        Shader fontShader = new Shader( "font1" );
-        Texture texture = new Texture( "test", png, TEXTURE );
-
-        Font font = new Font( "test", fontShader );
-
-        Quad quad = new Quad( new float[] {
-                1.0f,   1.0f,   0.0f,       1.0f,   1.0f,
-                1.0f,   -1.0f,  0.0f,       1.0f,   0.0f,
-                -1.0f,  -1.0f,  0.0f,       0.0f,   0.0f,
-                -1.0f,  1.0f,   0.0f,       0.0f,   1.0f
-        }, shader, texture );
-
-        quads.add( quad );
-        quads.addAll( font.write( 0, 0, "test string ", 2 ) );
+        this.quads = quads;
+        this.labels = labels;
     }
 
     public void render() {
         win.clear();
 
-        for ( Quad quad : quads ) {
-            quad.draw();
-        }
+        quads.forEach( Quad::draw );
+
+        labels.forEach( Label::draw );
 
         win.swapBuffers();
     }

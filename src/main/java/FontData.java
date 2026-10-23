@@ -8,12 +8,15 @@ public class FontData {
     public static class Common {
         public int scaleW;
         public int scaleH;
+        public int lineHeight;
     }
 
     public static class CharData {
         public int id;
         public int x;
         public int y;
+        public int xoffset;
+        public int yoffset;
         public int width;
         public int height;
         public int xadvance;

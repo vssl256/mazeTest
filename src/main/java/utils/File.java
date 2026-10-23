@@ -34,9 +34,12 @@ public class File {
     }
 
     public boolean isModified() {
-        boolean modified = lastModified != file.lastModified();
-        if ( modified ) lastModified = file.lastModified();
-        return modified;
+        long modified = file.lastModified();
+
+        if ( modified == lastModified ) return false;
+
+        lastModified = modified;
+        return true;
     }
 
     private String getFileTypeDir( String name ) {

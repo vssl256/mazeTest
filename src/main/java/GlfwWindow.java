@@ -21,6 +21,7 @@ public class GlfwWindow {
     private long monitor;
 
     public boolean[] keys = new boolean[ GLFW_KEY_LAST - 1 ];
+    public int lastKey;
 
     private final float[] clearColor = { 0, 0, 0 };
 
@@ -54,7 +55,7 @@ public class GlfwWindow {
         glfwSwapInterval( isVsync ? 1 : 0 );
 
         GL.createCapabilities();
-        
+
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
@@ -99,6 +100,7 @@ public class GlfwWindow {
             keys[ key ] = ( action != GLFW_RELEASE );
         }
         if ( action == GLFW_PRESS ) {
+            lastKey = key;
             switch ( key ) {
                 case GLFW_KEY_ESCAPE -> glfwSetWindowShouldClose( id, true );
                 case GLFW_KEY_V -> toggleVsync();
@@ -154,7 +156,7 @@ public class GlfwWindow {
         glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
         glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
         glfwWindowHint( GLFW_REFRESH_RATE, 180 );
-        glfwWindowHint( GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE );
+        //glfwWindowHint( GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE );
     }
 }
 

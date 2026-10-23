@@ -20,6 +20,8 @@ public class Time {
         return fps;
     }
 
+    public double timeElapsed = 0;
+
     public Time() {  }
 
     public void start() {
@@ -36,6 +38,7 @@ public class Time {
         }
 
         deltaTime = glfwGetTime() - frameStart;
+        timeElapsed += deltaTime;
     }
 
     private boolean isSecondPassed() {
