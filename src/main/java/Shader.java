@@ -1,8 +1,11 @@
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import utils.File;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,21 +56,48 @@ public class Shader {
             set2fv( name, ( Vector2f ) value );
             return;
         }
+        if ( value instanceof Vector3f ) {
+            set3fv( name, ( Vector3f ) value );
+            return;
+        }
+        if ( value instanceof Matrix4f ) {
+            setMatrix4fv( name, ( Matrix4f ) value );
+            return;
+        }
         System.err.println( "Couldn't find Object type " + value.getClass().getName() );
     }
 
-    public void set2fv( String name, Vector2f vector ) {
+    private void setMatrix4fv( String name, Matrix4f matrix4fv ) {
         glUseProgram( id );
         if ( !uLocations.containsKey( name ) ) {
             createUniform( name );
-            uniforms.put( name, vector );
+            uniforms.put( name, matrix4fv );
         }
-        uniforms.replace( name, vector );
-        setUniform2fv( name, vector );
-        glUseProgram( 0 );
+        uniforms.replace( name, matrix4fv );
+        setUniformMatrix4fv( name, matrix4fv );
     }
 
-    public void set2f( String name, float[] value ) {
+    private void set3fv( String name, Vector3f vector3f ) {
+        glUseProgram( id );
+        if ( !uLocations.containsKey( name ) ) {
+            createUniform( name );
+            uniforms.put( name, vector3f );
+        }
+        uniforms.replace( name, vector3f );
+        setUniform3fv( name, vector3f );
+    }
+
+    private void set2fv( String name, Vector2f vector2f ) {
+        glUseProgram( id );
+        if ( !uLocations.containsKey( name ) ) {
+            createUniform( name );
+            uniforms.put( name, vector2f );
+        }
+        uniforms.replace( name, vector2f );
+        setUniform2fv( name, vector2f );
+    }
+
+    private void set2f( String name, float[] value ) {
         glUseProgram( id );
         if ( !uLocations.containsKey( name ) ) {
             createUniform( name );
@@ -75,10 +105,9 @@ public class Shader {
         }
         uniforms.replace( name, value );
         setUniform2f( name, value );
-        glUseProgram( 0 );
     }
 
-    public void set1d( String name, double value ) {
+    private void set1d( String name, double value ) {
         glUseProgram( id );
         if ( !uLocations.containsKey( name ) ) {
             createUniform( name );
@@ -86,10 +115,9 @@ public class Shader {
         }
         uniforms.replace( name, value );
         setUniform1d( name, value );
-        glUseProgram( 0 );
     }
 
-    public void set1f( String name, float value ) {
+    private void set1f( String name, float value ) {
         glUseProgram( id );
         if ( !uLocations.containsKey( name ) ) {
             createUniform( name );
@@ -97,10 +125,9 @@ public class Shader {
         }
         uniforms.replace( name, value );
         setUniform1f( name, value );
-        glUseProgram( 0 );
     }
 
-    public void set1i( String name, int value ) {
+    private void set1i( String name, int value ) {
         glUseProgram( id );
         if ( !uLocations.containsKey( name ) ) {
             createUniform( name );
@@ -108,7 +135,6 @@ public class Shader {
         }
         uniforms.replace( name, value );
         setUniform1i( name, value );
-        glUseProgram( 0 );
     }
 
     private void createUniform( String name ) {
@@ -121,14 +147,36 @@ public class Shader {
         uLocations.put( name, uLocation );
     }
 
-    private void setUniform2fv( String name, Vector2f vector ) {
+    private void setUniformMatrix4fv( String name, Matrix4f matrix4fv ) {
         Integer uLocation = uLocations.get( name );
         if ( uLocation == null ) {
             return;
         }
         try ( MemoryStack stack = MemoryStack.stackPush() ) {
-            FloatBuffer buffer = stack.mallocFloat( 2 );
-            glUniform2fv( uLocation, vector.get( buffer ) );
+            FloatBuffer floatBuffer = stack.mallocFloat( 16 );
+            glUniformMatrix4fv( uLocation, false, matrix4fv.get( floatBuffer ) );
+        }
+    }
+
+    private void setUniform3fv( String name, Vector3f vector3f ) {
+        Integer uLocation = uLocations.get( name );
+        if ( uLocation == null ) {
+            return;
+        }
+        try ( MemoryStack stack = MemoryStack.stackPush() ) {
+            FloatBuffer floatBuffer = stack.mallocFloat( 3 );
+            glUniform3fv( uLocation, vector3f.get( floatBuffer ) );
+        }
+    }
+
+    private void setUniform2fv( String name, Vector2f vector2f ) {
+        Integer uLocation = uLocations.get( name );
+        if ( uLocation == null ) {
+            return;
+        }
+        try ( MemoryStack stack = MemoryStack.stackPush() ) {
+            FloatBuffer floatBuffer = stack.mallocFloat( 2 );
+            glUniform2fv( uLocation, vector2f.get( floatBuffer ) );
         }
     }
 
@@ -224,5 +272,28 @@ public class Shader {
             return -1;
         }
         return newId;
+    }
+
+    public void debugMatrix( String name ) {
+        int location = glGetUniformLocation( id, name );
+
+        if ( location == -1 ) {
+            System.out.println( name + ": uniform not found" );
+            return;
+        }
+
+        try ( MemoryStack stack = MemoryStack.stackPush() ) {
+            FloatBuffer buffer = stack.mallocFloat( 16 );
+
+            glGetUniformfv( id, location, buffer );
+
+            float[] values = new float[ 16 ];
+
+            for ( int i = 0; i < 16; i++ ) {
+                values[ i ] = buffer.get( i );
+            }
+
+            System.out.println( name + ": " + Arrays.toString( values ) );
+        }
     }
 }

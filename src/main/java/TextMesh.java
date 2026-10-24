@@ -23,6 +23,7 @@ public class TextMesh {
         this.font = font;
         glyphs = font.createGlyphs( x, y, string );
 
+
         generateIndices();
         generateVertices();
         init();

@@ -5,7 +5,7 @@ public class Label {
     private final Font font;
     public String string;
     public int x, y;
-    public List<Quad> quads;
+    public List<QuadDepr> quadDeprs;
     private TextMesh textMesh;
 
     public Label( Font font, String string, int x, int y ) {

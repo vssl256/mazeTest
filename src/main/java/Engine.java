@@ -23,8 +23,8 @@ public class Engine {
     private final GlfwWindow win;
     private final Time time;
     private Render render;
-    private List<Shader> shaders = new ArrayList<>();
-    private List<Quad> quads = new ArrayList<>();
+    private List<Shader> loadedShaders = new ArrayList<>();
+    private List<QuadDepr> quadDeprs = new ArrayList<>();
     private List<Label> labels = new ArrayList<>();
     private Label fpsLabel;
 
@@ -47,7 +47,7 @@ public class Engine {
                 win.setTitle( time.getFps() + " FPS"  );
                 time.timeElapsed = 0;
 
-                shaders.forEach( Shader::recompile );
+                loadedShaders.forEach( Shader::recompile );
             }
 
             time.end();
@@ -56,10 +56,15 @@ public class Engine {
     }
 
     private void initRender() {
+        Transformation transformation = new Transformation(
+                70.0f,
+                1.0f,
+                0.01f,
+                1000.0f
+        );
+
         Shader quadShader = new Shader( "default" );
         Texture quadTexture = new Texture( "test", png, TEXTURE );
-        Quad quad = new Quad( 0, 0, 1920, 1080, quadShader, quadTexture );
-        quads.add( quad );
 
         Shader fontShader = new Shader( "font1" );
         Font font = new Font( "test", fontShader, 1.0f );
@@ -68,10 +73,22 @@ public class Engine {
         labels.add( fpsLabel );
         labels.add( label );
 
-        shaders.add( quadShader );
-        shaders.add( fontShader );
+        loadedShaders.add( quadShader );
+        loadedShaders.add( fontShader );
 
-        render = new Render( win, quads, labels );
+        List<QuadMesh> quadMeshes = new ArrayList<>();
+        List<Quad> quads = new ArrayList<>();
+
+        for ( int i = 0; i < 1920 / 50; i++ ) {
+            Quad quad1 = new Quad( i * 50, 0 , i * 50, 0, quadTexture.width, quadTexture.height );
+            quads.add( quad1 );
+        }
+
+        QuadMesh quadMesh = new QuadMesh( quads, quadTexture, quadShader, transformation );
+        quadMeshes.add( quadMesh );
+
+
+        render = new Render( win, transformation, quadMeshes, labels );
     }
 
     private void inputHandler() {

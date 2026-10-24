@@ -59,24 +59,24 @@ public class Font {
         return glyphs;
     }
 
-    public List<Quad> createText( int x, int y, String string ) {
-        List<Quad> glyphs = new ArrayList<>();
+    public List<QuadDepr> createText(int x, int y, String string ) {
+        List<QuadDepr> glyphs = new ArrayList<>();
         for ( char glyph : string.toCharArray() ) {
             FontData.CharData charData = charMap.get( ( int ) glyph );
             if ( glyph == '\n' ) { x = 0; y += lineHeight; }
-            Quad character = createGlyph( x, y, ( int ) glyph );
+            QuadDepr character = createGlyph( x, y, ( int ) glyph );
             if ( glyph != '\n' ) x += charData.xadvance;
             glyphs.add( character );
         }
         return glyphs;
     }
 
-    public Quad createQuad( int x, int y, FontData.CharData glyph ) {
-        return new Quad( x, y, glyph.width, glyph.height, shader, atlas, glyph.x + glyph.xoffset, glyph.y + glyph.yoffset, scaleW, scaleH, size );
+    public QuadDepr createQuad(int x, int y, FontData.CharData glyph ) {
+        return new QuadDepr( x, y, glyph.width, glyph.height, shader, atlas, glyph.x + glyph.xoffset, glyph.y + glyph.yoffset, scaleW, scaleH, size );
     }
 
     public List<Glyph> createGlyphs( int x, int y, String string ) {
-        List<Glyph> glyphs = new ArrayList<>();
+        List<Glyph> glyphs = new ArrayList<>( string.length() );
 
         for ( char c : string.toCharArray() ) {
             FontData.CharData charData = charMap.get( ( int ) c );
@@ -85,16 +85,23 @@ public class Font {
                 y += lineHeight;
                 x = 0;
             }
-            Glyph glyph = new Glyph( charData.id, x, y, charData.x + charData.xoffset, charData.y + charData.yoffset, charData.width, charData.height );
+            glyphs.add( new Glyph(
+                    charData.id,
+                    x,
+                    y,
+                    charData.x + charData.xoffset,
+                    charData.y + charData.yoffset,
+                    charData.width,
+                    charData.height
+            ) );
             x += charData.xadvance;
-            glyphs.add( glyph );
         }
 
         return glyphs;
     }
 
-    public List<Quad> createLabel( int x, int y, String string ) {
-        List<Quad> glyphs = new ArrayList<>();
+    public List<QuadDepr> createLabel(int x, int y, String string ) {
+        List<QuadDepr> glyphs = new ArrayList<>();
 
         for ( char glyph : string.toCharArray() ) {
             FontData.CharData charData = charMap.get( ( int ) glyph );
@@ -104,7 +111,7 @@ public class Font {
                 y += lineHeight;
                 x = 0;
             } else {
-                Quad character = createGlyph( x, y, ( int ) glyph );
+                QuadDepr character = createGlyph( x, y, ( int ) glyph );
                 x += charData.xadvance;
                 glyphs.add( character );
             }
@@ -113,18 +120,18 @@ public class Font {
         return glyphs;
     }
 
-    public List<Quad> createQuads( int x, int y, List<FontData.CharData> charData ) {
-        List<Quad> quads = new ArrayList<>();
+    public List<QuadDepr> createQuads(int x, int y, List<FontData.CharData> charData ) {
+        List<QuadDepr> quadDeprs = new ArrayList<>();
         for ( FontData.CharData glyph : charData ) {
-            Quad quad = new Quad( x, y, glyph.width, glyph.height, shader, atlas, glyph.x + glyph.xoffset, glyph.y + glyph.yoffset, scaleW, scaleH, size );
-            quads.add( quad );
+            QuadDepr quadDepr = new QuadDepr( x, y, glyph.width, glyph.height, shader, atlas, glyph.x + glyph.xoffset, glyph.y + glyph.yoffset, scaleW, scaleH, size );
+            quadDeprs.add(quadDepr);
         }
-        return quads;
+        return quadDeprs;
     }
 
-    public Quad createGlyph(int x, int y, Integer id ) {
+    public QuadDepr createGlyph(int x, int y, Integer id ) {
         if ( id == ( int ) '\n' ) id = 32;
         FontData.CharData charData = charMap.get( id );
-        return new Quad( x, y, charData.width, charData.height, shader, atlas, charData.x + charData.xoffset, charData.y + charData.yoffset, scaleW, scaleH, size );
+        return new QuadDepr( x, y, charData.width, charData.height, shader, atlas, charData.x + charData.xoffset, charData.y + charData.yoffset, scaleW, scaleH, size );
     }
 }
