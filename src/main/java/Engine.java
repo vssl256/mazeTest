@@ -62,12 +62,11 @@ public class Engine {
         quads.add( quad );
 
         Shader fontShader = new Shader( "font1" );
-        Font font = new Font( "test", fontShader );
-        fpsLabel = new Label( font, "a", 0, 0, 1 );
-        Label label = new Label( font, string, 0, 30, 1 );
+        Font font = new Font( "test", fontShader, 1.0f );
+        fpsLabel = new Label( font, "a", 0, 0 );
+        Label label = new Label( font, string, 0, 30 );
         labels.add( fpsLabel );
         labels.add( label );
-        System.out.println( label.quads.size() );
 
         shaders.add( quadShader );
         shaders.add( fontShader );

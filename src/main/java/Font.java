@@ -17,10 +17,12 @@ public class Font {
     public int scaleW, scaleH;
     public int lineHeight;
     public final Shader shader;
+    public float size;
 
-    public Font( String fontName, Shader shader ) {
+    public Font( String fontName, Shader shader, float size ) {
         this.name = fontName;
         this.shader = shader;
+        this.size = size;
 
         initGlyphs();
         initAtlas();
@@ -57,23 +59,41 @@ public class Font {
         return glyphs;
     }
 
-    public List<Quad> createText( int x, int y, String string, float size ) {
+    public List<Quad> createText( int x, int y, String string ) {
         List<Quad> glyphs = new ArrayList<>();
         for ( char glyph : string.toCharArray() ) {
             FontData.CharData charData = charMap.get( ( int ) glyph );
             if ( glyph == '\n' ) { x = 0; y += lineHeight; }
-            Quad character = createGlyph( x, y, ( int ) glyph, size );
+            Quad character = createGlyph( x, y, ( int ) glyph );
             if ( glyph != '\n' ) x += charData.xadvance;
             glyphs.add( character );
         }
         return glyphs;
     }
 
-    public Quad createQuad( int x, int y, FontData.CharData glyph, float size ) {
+    public Quad createQuad( int x, int y, FontData.CharData glyph ) {
         return new Quad( x, y, glyph.width, glyph.height, shader, atlas, glyph.x + glyph.xoffset, glyph.y + glyph.yoffset, scaleW, scaleH, size );
     }
 
-    public List<Quad> createLabel( int x, int y, String string, float size ) {
+    public List<Glyph> createGlyphs( int x, int y, String string ) {
+        List<Glyph> glyphs = new ArrayList<>();
+
+        for ( char c : string.toCharArray() ) {
+            FontData.CharData charData = charMap.get( ( int ) c );
+            if ( charData == null ) charData = charMap.get( 32 );
+            if ( charData == charMap.get( ( int ) '\n' ) || x + charData.width >= 1920 ) {
+                y += lineHeight;
+                x = 0;
+            }
+            Glyph glyph = new Glyph( charData.id, x, y, charData.x + charData.xoffset, charData.y + charData.yoffset, charData.width, charData.height );
+            x += charData.xadvance;
+            glyphs.add( glyph );
+        }
+
+        return glyphs;
+    }
+
+    public List<Quad> createLabel( int x, int y, String string ) {
         List<Quad> glyphs = new ArrayList<>();
 
         for ( char glyph : string.toCharArray() ) {
@@ -84,7 +104,7 @@ public class Font {
                 y += lineHeight;
                 x = 0;
             } else {
-                Quad character = createGlyph( x, y, ( int ) glyph, size );
+                Quad character = createGlyph( x, y, ( int ) glyph );
                 x += charData.xadvance;
                 glyphs.add( character );
             }
@@ -93,7 +113,7 @@ public class Font {
         return glyphs;
     }
 
-    public List<Quad> createQuads( int x, int y, List<FontData.CharData> charData, float size ) {
+    public List<Quad> createQuads( int x, int y, List<FontData.CharData> charData ) {
         List<Quad> quads = new ArrayList<>();
         for ( FontData.CharData glyph : charData ) {
             Quad quad = new Quad( x, y, glyph.width, glyph.height, shader, atlas, glyph.x + glyph.xoffset, glyph.y + glyph.yoffset, scaleW, scaleH, size );
@@ -102,7 +122,7 @@ public class Font {
         return quads;
     }
 
-    public Quad createGlyph(int x, int y, Integer id, float size ) {
+    public Quad createGlyph(int x, int y, Integer id ) {
         if ( id == ( int ) '\n' ) id = 32;
         FontData.CharData charData = charMap.get( id );
         return new Quad( x, y, charData.width, charData.height, shader, atlas, charData.x + charData.xoffset, charData.y + charData.yoffset, scaleW, scaleH, size );

@@ -102,7 +102,6 @@ public class Quad {
         glEnableVertexAttribArray( 1 );
 
         MemoryUtil.memFree( verticesBuffer );
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
 
     public void draw() {
